@@ -1,4 +1,5 @@
 const Products = require("../model/product_structure");
+const ApiFeatures = require("../util/search");
 
 const addProduct = async (req, res) => {
   try {
@@ -34,7 +35,27 @@ const fetchByBrand = async (req, res) => {
   return res.send({ Result: result });
 };
 
-module.exports = { addProduct, fetchProducts, fetchByBrand,fetchByCategory };
+
+const search = async (req, res) => {
+  try {
+    const data = req.query;
+    const result = new ApiFeatures(Products.find(), data).search();
+    const products = await result.query; // Assuming it's an array of Mongoose documents
+
+    return res.send({
+      msg: "rendered",
+      products,
+    });
+  } catch (error) {
+    console.error("Error during search:", error);
+    res.status(500).send({ msg: "Error during search" });
+  }
+};
+
+
+
+
+module.exports = { addProduct, fetchProducts, fetchByBrand,fetchByCategory,search };
 
 // id,
 // title,
